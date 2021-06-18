@@ -2,6 +2,10 @@
   app.js -- This creates an Express webserver
 */
 
+import {PlayerWord} from './PlayerWord'
+import {Player} from './Player'
+
+
 // First we load in all of the packages we need for the server...
 const createError = require("http-errors");
 const express = require("express");
@@ -47,58 +51,66 @@ app.use(function(req, res, next) {
   next();
 });
 
+console.log("I am running!")
+
 // here we start handling routes
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.get("/demo", 
-        function (req, res){res.render("demo");});
 
-app.get("/about", (request, response) => {
-  response.render("about");
+var players: Player[] = [new Player(0),new Player(1)]
+
+app.get('/word', (req,res) => {
+  res.locals.extrastuff = ''
+  for (var player of players){
+    res.locals.extrastuff += player.display()
+  }
+  res.render('wordSubmit')
+})
+
+app.post('/submitWord',(req,res) => {
+  players[req.body.number].makeWord(req.body.word)
+  res.locals.extrastuff = players.map(x => x.display())
+  res.render('wordSubmit')
+})
+
+app.post('/guessWord',(req,res) => {
+  const guess = req.body.guess
+
+  players[0].takeDamage(players[req.body.number].guessLetter(guess))
+  res.locals.extrastuff = players.map(x => x.display())
+  res.render('wordSubmit')
+})
+
+
+app.get("/json", (req, res) => {
+  res.render("json");
 });
 
-app.get("/form", (request,response) => {
-  response.render("form")
-})
-
-app.post("/showformdata", (request,response) => {
-  response.json(request.body)
-})
-
-// Here is where we will explore using forms!
-
-
-
-// this example shows how to get the current US covid data
-// and send it back to the browser in raw JSON form, see
-// https://covidtracking.com/data/api
-// for all of the kinds of data you can get
-app.get("/c19", 
+app.post("/jsonResult",
   async (req,res,next) => {
     try {
-      const url = "https://covidtracking.com/api/v1/us/current.json"
-      const result = await axios.get(url)
-      res.json(result.data)
+      const url = req.body.url
+      const key = req.body.key
+
+      const result = await axios.get("https://abusiveexperiencereport.googleapis.com/v1/sites/" + url + "?key=" + key)
+
+      res.locals.abusiveStatus = result.data.abusiveStatus
+      res.locals.url = req.body.url
+      res.locals.key = req.body.key
+
+      console.log(result.data)
+      res.render('jsonResult')
     } catch(error){
       next(error)
     }
-})
 
-// this shows how to use an API to get recipes
-// http://www.recipepuppy.com/about/api/
-// the example here finds omelet recipes with onions and garlic
-app.get("/omelet",
-  async (req,res,next) => {
-    try {
-      const url = "http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3"
-      const result = await axios.get(url)
-      res.json(result.data)
-    } catch(error){
-      next(error)
-    }
-})
+
+}
+
+)
+
 
 // Don't change anything below here ...
 
