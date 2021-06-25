@@ -1,0 +1,32 @@
+<%- include('bootheader') -%>
+
+<%- include('menubar') -%>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <h1> Your profile: </h1>
+          <div class="row">
+            <h3> username: <%= user.username%></h3>
+          </div>
+          <div class="row">
+            <h3> bio: <%=user.bio%></h3>
+          </div>
+          <div class="row">
+            <h3> wins: <%=user.wins%></h3>
+          </div>
+    </div>
+    <div class="col-sm">
+      <h2> Edit profile info: <%=user.googlename %></h2>
+        <form method="post" action ="/editProfile">
+          <input type="text" name="username" size="60"/> change username <br>
+          <input type="text" name="bio" size="60"/> change bio <br>
+          <input type="submit" value="Submit"/>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+<%- include('bootfooter') -%>

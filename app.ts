@@ -16,6 +16,27 @@ const session = require("express-session");
 const axios = require("axios");
 var debug = require("debug")("personalapp:server");
 
+// server
+const mongoose = require( 'mongoose' );
+//mongoose.connect( `mongodb+srv://${auth.atlasAuth.username}:${auth.atlasAuth.password}@cluster0-yjamu.mongodb.net/authdemo?retryWrites=true&w=majority`);
+mongoose.connect( 'mongodb://localhost/authDemo');
+//const mongoDB_URI = process.env.MONGODB_URI
+//mongoose.connect(mongoDB_URI)
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("we are connected!!!")
+});
+
+const authRouter = require('./routes/authentication');
+const isLoggedIn = authRouter.isLoggedIn;
+const loggingRouter = require('./routes/logging');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+// const toDoRouter = require('./routes/todo');
+// const toDoAjaxRouter = require('./routes/todoAjax');
+
 // Now we create the server
 const app = express();
 
@@ -51,6 +72,35 @@ app.use(function(req, res, next) {
   next();
 });
 
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// app.use(cors());
+// app.use(layouts);
+//
+// app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(authRouter)
+app.use(loggingRouter);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
+// app.use('/todo',toDoRouter);
+// app.use('/todoAjax',toDoAjaxRouter);
+
+
+
+
+
+
+
+
+var players: Player[] = [new Player(0),new Player(1)]
 console.log("I am running!")
 
 // here we start handling routes
@@ -58,16 +108,26 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-
-var players: Player[] = [new Player(0),new Player(1)]
-
-app.get('/word', (req,res) => {
-  res.locals.extrastuff = ''
-  for (var player of players){
-    res.locals.extrastuff += player.display()
-  }
-  res.render('wordSubmit')
+// if not logged in, it shows the login thingy
+app.get('/word', isLoggedIn, (req,res) => {
+    async (req,res,next) => {
+      try {
+        res.locals.extrastuff = ''
+        for (var player of players){
+          res.locals.extrastuff += player.display()
+        }
+        res.render('wordSubmit')
+      }
+      catch(error){
+        next(error)
+      }
+    }
 })
+
+app.get('/loginScreen', (req,res) => {
+  res.render('loginScreen')
+})
+
 
 app.post('/submitWord',(req,res) => {
   players[req.body.number].makeWord(req.body.word)
@@ -84,9 +144,28 @@ app.post('/guessWord',(req,res) => {
 })
 
 
-app.get("/json", (req, res) => {
+app.get("/json", isLoggedIn, (req, res) => {
   res.render("json");
 });
+
+app.get("/profile", isLoggedIn, (req, res) => {
+  res.render("profile");
+});
+
+app.post('/editProfile',
+    isLoggedIn,
+    async (req,res,next) => {
+      try {
+        let username = req.body.username
+        let bio = req.body.bio
+        req.user.username = username
+        req.user.bio = bio
+        await req.user.save()
+        res.redirect('/profile')
+      } catch (error) {
+        next(error)
+      }
+})
 
 app.post("/jsonResult",
   async (req,res,next) => {
