@@ -116,7 +116,7 @@ app.get('/word', isLoggedIn, (req,res) => {
         for (var player of players){
           res.locals.extrastuff += player.display()
         }
-        res.render('wordSubmit')
+        res.render('gameScreen')
       }
       catch(error){
         next(error)
@@ -129,10 +129,10 @@ app.get('/loginScreen', (req,res) => {
 })
 
 
-app.post('/submitWord',(req,res) => {
+app.post('/changeWord',(req,res) => {
   players[req.body.number].makeWord(req.body.word)
   res.locals.extrastuff = players.map(x => x.display())
-  res.render('wordSubmit')
+  res.render('gameScreen')
 })
 
 app.post('/guessWord',(req,res) => {
@@ -140,7 +140,7 @@ app.post('/guessWord',(req,res) => {
 
   players[0].takeDamage(players[req.body.number].guessLetter(guess))
   res.locals.extrastuff = players.map(x => x.display())
-  res.render('wordSubmit')
+  res.render('gameScreen')
 })
 
 
@@ -184,11 +184,22 @@ app.post("/jsonResult",
     } catch(error){
       next(error)
     }
+})
+
+// ============================================================================================================================
+// this is for handling waiting room routes
+
+app.get("/submiWord", (req, res) => {
+  req.body.
+  res.render("waitingRoom");
+});
 
 
-}
 
-)
+
+
+
+
 
 
 // Don't change anything below here ...
