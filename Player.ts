@@ -3,18 +3,19 @@ import {PlayerWord} from './PlayerWord'
 
 export class Player{
 
+  id: string
   word: PlayerWord
-  output:string
-  number:number
-  health:number
-  healthString:string
+  // output:string
+  // id:number
+  // health:number
+  // healthString:string
 
   constructor(input){
     this.word = new PlayerWord()
     this.word.makeWord('placeholder')
-    this.number = input
-    this.health = 6
-    this.healthString = ''
+    // this.id = input
+    // this.health = 6
+    // this.healthString = ''
   }
 
   makeWord(input){
@@ -27,34 +28,34 @@ export class Player{
     return this.word.guessLetter(input)
   }
 
-  takeDamage(input){
-    this.health -= input
-  }
+  // takeDamage(input){
+  //   this.health -= input
+  // }
 
-  display(){
+  // display(){
 
-    this.healthString = ''
+  //   this.healthString = ''
 
-    for (var i = 0; i < this.health; i++){
-      this.healthString += "<3 "
-    }
+  //   for (var i = 0; i < this.health; i++){
+  //     this.healthString += "<3 "
+  //   }
 
-    var output = ""
+  //   var output = ""
 
-    output += "<h1>" + this.word.getWord() + "</h1>" + "<h1>" + this.word.getDashes() + "</h1>"
-    + "<h3>" + this.healthString + "</h3>"
-    +`<form method="post" action ="/submitWord">
-        <input type="text" name="word" size="60"/> set word <br>
-        <input type="submit" value="Submit"/>
-        <input type="text" name="number" size="60" value="` + this.number +`" hidden='true'/>
-      </form>
+  //   output += "<h1>" + this.word.getWord() + "</h1>" + "<h1>" + this.word.getDashes() + "</h1>"
+  //   + "<h3>" + this.healthString + "</h3>"
+  //   +`<form method="post" action ="/submitWord">
+  //       <input type="text" name="word" size="60"/> set word <br>
+  //       <input type="submit" value="Submit"/>
+  //       <input type="text" name="number" size="60" value="` + this.number +`" hidden='true'/>
+  //     </form>
 
-      <form method="post" action ="/guessWord">
-        <input type="text" name="guess" size="60"/> Guess letter <br/>
-        <input type="submit" value="Submit"/>
-        <input type="text" name="number" size="60" value="` + this.number +`" hidden='true'/>
-      </form> <hr>`
+  //     <form method="post" action ="/guessWord">
+  //       <input type="text" name="guess" size="60"/> Guess letter <br/>
+  //       <input type="submit" value="Submit"/>
+  //       <input type="text" name="number" size="60" value="` + this.number +`" hidden='true'/>
+  //     </form> <hr>`
 
-    return output
-  }
+  //   return output
+  // }
 }

@@ -1,0 +1,14 @@
+
+
+
+<div>
+  There are <%- gameApp.waitingRoom.getReadyPlayerCount()%> / <%- gameApp.waitingRoom.getPlayerCount()%> players ready.
+  <%- JSON.stringify(gameApp.waitingRoom.players) %> 
+</div>
+
+
+
+<form method="post" action ="/room/20/id/<%=userid%>/submitWord">
+  <input type="text" name="word" size="60"/> write your word <br>
+  <input type="submit" value="Submit"/>
+</form>
