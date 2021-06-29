@@ -3,16 +3,17 @@ import {PlayerWord} from './PlayerWord'
 
 export class Player{
 
-  id: string
+  googleid: string
   word: PlayerWord
   // output:string
   // id:number
   // health:number
   // healthString:string
 
-  constructor(input){
+  constructor(id){
     this.word = new PlayerWord()
     this.word.makeWord('placeholder')
+    this.googleid = id
     // this.id = input
     // this.health = 6
     // this.healthString = ''

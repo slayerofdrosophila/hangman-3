@@ -12,32 +12,34 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-//const bodyParser = require("body-parser");
-// const axios = require("axios");
+const bodyParser = require("body-parser");
+const axios = require("axios");
 var debug = require("debug")("personalapp:server");
 
 
 
 
 // tadasbe
-// const mongoose = require( 'mongoose' );
-// mongoose.connect( 'mongodb://localhost/authDemo');
+const mongoose = require( 'mongoose' );
+mongoose.connect( 'mongodb://localhost/authDemo');
 
+// this is for mongodb cloud 
 //mongoose.connect( `mongodb+srv://${auth.atlasAuth.username}:${auth.atlasAuth.password}@cluster0-yjamu.mongodb.net/authdemo?retryWrites=true&w=majority`);
 //const mongoDB_URI = process.env.MONGODB_URI
 //mongoose.connect(mongoDB_URI)
 
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//   console.log("we are connected!!!")
-// });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("we are connected!!!")
+});
 
-// const authRouter = require('./routes/authentication');
-// const isLoggedIn = authRouter.isLoggedIn;
-// const loggingRouter = require('./routes/logging');
-// const indexRouter = require('./routes/index');
-// const usersRouter = require('./routes/users');
+// google authentication blah
+const authRouter = require('./routes/authentication');
+const isLoggedIn = authRouter.isLoggedIn;
+const loggingRouter = require('./routes/logging');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
 
 // Now we create the server
@@ -64,7 +66,7 @@ app.use(
   })
 );
 
-//app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // This is an example of middleware
 // where we look at a request and process it!
@@ -77,13 +79,11 @@ app.use(function(req, res, next) {
 
 
 
-// app.use(authRouter)
-// app.use(loggingRouter);
+app.use(authRouter)
+app.use(loggingRouter);
 // app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+app.use('/users', usersRouter);
 
-// app.use('/todo',toDoRouter);
-// app.use('/todoAjax',toDoAjaxRouter);
 
 
 
@@ -97,26 +97,42 @@ const gameApp = new WordGameApp();
 
 
 // here we start handling routes
-app.get("/", (req, res) => {
+app.get("/", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
-  console.log(gameApp.waitingRoom.getPlayerCount())
+  res.render("roomSelection");
+});
+
+
+// joining room
+app.post("/selectRoom", isLoggedIn, (req, res) => {
+  res.locals.gameApp = gameApp
+  res.locals.roomid = req.body.roomnumber
+
+  console.log(gameApp.waitingRooms[req.body.roomnumber].getPlayerCount())
+
+  // gameApp.waitingRooms[req.body.roomnumber].join(req.user._id) // that's passing in the google ID
+
+  gameApp.joinRoom(req.body.roomnumber,req.user._id)
+  
   res.render("waitingRoom");
 });
 
-app.post("/room/20/id/:userid/submitWord", (req, res) => {
-  gameApp.waitingRoom.submitWord(req.body.word,req.params.userid)
+
+
+// thjis 
+app.post("/submitWord", isLoggedIn, (req, res) => {
+  // gameApp.waitingRoom.submitWord(req.body.word,req.user._id)
+
+  gameApp.submitWord(req.body.word,req.user._id)
+
   res.locals.gameApp = gameApp
   res.locals.userid = req.params.userid
+  res.locals.roomid = gameApp.roomLookup(req.user._id)
+
   res.render("waitingRoom");
 });
 
-app.get("/id/:userid", (req, res) => {
-  res.locals.gameApp = gameApp
-  console.log(gameApp.waitingRoom.getPlayerCount())
-  gameApp.waitingRoom.join(req.params.userid)
-  res.locals.userid = req.params.userid
-  res.render("waitingRoom");
-});
+
 
 
 

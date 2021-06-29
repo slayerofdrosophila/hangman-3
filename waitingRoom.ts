@@ -4,22 +4,31 @@ export class waitingRoom{
 
   readyPlayerCount: number
   playerCount: number
-  players: {[id:string]: Player}
+  players: {[googleid:string]: Player}
+  roomID: number
 
-  constructor(){
+  constructor(id: number){
     this.readyPlayerCount = 0
     this.playerCount = 0
     this.players = {}
+    this.roomID = id
   }
 
-  join(userid:string){ // <marquee> UserID not escaped B) </marquee>
+  // when a new player joins. creates a Player object for them
+  join(googleid:string){ // <marquee> UserID not escaped B) </marquee>
     this.playerCount++
-    this.players[userid] = new Player('')
+    this.players[googleid] = new Player(googleid)
   }
 
   submitWord(word:string, id:string){
     this.readyPlayerCount++
     this.players[id].makeWord(word)
+
+    if (this.readyPlayerCount == this.playerCount && this.playerCount > 1){
+      // game.start()
+      // send the players away
+      // destroy the roomk
+    }
   }
 
 
