@@ -18,4 +18,4 @@ var userSchema = Schema( {
   bio: String,
 } );
 
-module.exports = mongoose.model( 'User', userSchema );
+module.exports = mongoose.model( 'HangmanUser', userSchema );
