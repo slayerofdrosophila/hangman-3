@@ -1,14 +1,53 @@
+<%- include('bootheader') -%>
+<%- include('menubar') -%>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+  var socket = io();
+  socket.emit("roomid",<%- roomid %>)
+
+  socket.on('refresh', function(msg) {
+    console.log("reloadign")
+    location.reload()
+  });
+
+  socket.on('sendToGame', function(msg) {
+    console.log("reloadsendtogameign")
+    window.location.href = "/gameScreen"
+  });
+</script>
+
 
 
 
 <div>
-  There are <%- gameApp.waitingRooms[roomid].getReadyPlayerCount()%> / <%- gameApp.waitingRooms[roomid].getPlayerCount()%> players ready.
-  <%- JSON.stringify(gameApp.waitingRooms[roomid].players) %> 
+  There are <%= gameApp.waitingRooms[roomid].getReadyPlayerCount()%> / <%= gameApp.waitingRooms[roomid].maxPlayers%> players ready. <br>
+  There are <%= gameApp.waitingRooms[roomid].getPlayerCount()%> players in this room. <br>
 </div>
-
-
 
 <form method="post" action ="/submitWord">
   <input type="text" name="word" size="60"/> write your word <br>
   <input type="submit" value="Submit"/>
 </form>
+
+<br>
+
+<table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <td>Connected players:</td>
+      </tr>
+    </thead>
+  <% Object.keys(gameApp.waitingRooms[roomid].players).forEach(googleid => {%>
+    <tr>
+      <td> <%= gameApp.waitingRooms[roomid].players[googleid].displayName %></td>
+      <td> <%= gameApp.waitingRooms[roomid].players[googleid].word.word %> </td>
+    </tr>
+  <% }) %>
+</table>
+
+
+
+<%- include('bootfooter') -%>
+

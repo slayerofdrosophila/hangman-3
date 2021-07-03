@@ -22,6 +22,7 @@ export class PlayerWord {
     }
   }
 
+
   guessLetter(guess:string){
     var corrects = 0
     for (let i in this.wordList) {
@@ -31,9 +32,13 @@ export class PlayerWord {
         corrects++
       }
     }
+    this.getDashes()
+    // if the letter was guessed right
+    // this return gets passed into takeDamage
     if (corrects > 0){
       return 0
     }
+    // letter was guessed wrong
     else{
       return 1
     }
@@ -44,9 +49,7 @@ export class PlayerWord {
   }
 
   getDashes(){
-
     this.underscoresString = this.underscoresList.join('')
-
     return this.underscoresString
   }
 }

@@ -1,29 +1,41 @@
-import {waitingRoom} from './waitingRoom'
+import {WaitingRoom} from './waitingRoom'
+import {GameRoom} from './GameStuff'
 
 export class WordGameApp{
 
   // this means that is a member
-  waitingRooms: waitingRoom[] = []
-  roomMap: {[googleid: string]: waitingRoom} = {}
+  waitingRooms: WaitingRoom[] = []
+  googleIdRoomMap: {[googleid: string]: WaitingRoom} = {}
+
+  gameRooms: GameRoom[] = []
 
   constructor(){
-    for (let i = 0; i<3; i++){
-      this.waitingRooms.push(new waitingRoom(i))
+    for (let i = 0; i<4; i++){
+      this.waitingRooms.push(new WaitingRoom(i,i+1))
     }
   }
 
+  createGameRoom(roomid: number){
+    this.gameRooms[roomid] = (new GameRoom(this.waitingRooms[roomid].players, roomid))
+  }
 
-  joinRoom(roomid: string, userid: string){
-    this.roomMap[userid] = this.waitingRooms[roomid]
-    this.waitingRooms[roomid].join(userid)
+
+
+  createWaitingRoom(maxplayers: number){
+    this.waitingRooms.push(new WaitingRoom(this.waitingRooms.length,maxplayers))
+  }
+
+  joinWaitingRoom(roomid: string, user: any){
+    this.googleIdRoomMap[user._id] = this.waitingRooms[roomid]
+    this.waitingRooms[roomid].join(user)
   }
 
   submitWord(word: string, userid: string){
-    this.roomMap[userid].submitWord(word,userid)
+    this.googleIdRoomMap[userid].submitWord(word,userid)
   }
 
   roomLookup(userid:string){
-    return this.roomMap[userid].roomID
+    return this.googleIdRoomMap[userid].roomID
   }
 
 

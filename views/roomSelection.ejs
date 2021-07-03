@@ -1,16 +1,28 @@
+<%- include('bootheader') -%>
+
+<%- include('menubar') -%>
+
 
 <table class="table table-bordered table-striped">
-    <% gameApp.waitingRooms.forEach(waitingRoom => {%>
-        <tr>
-            <td>Room <%= waitingRoom.roomID %></td>
-            <td>Players: <%= waitingRoom.playerCount %> / 6</td>
-        </tr>
-    <% }) %>
+  <% gameApp.waitingRooms.forEach(waitingRoom => {%>
+    <tr>
+      <td>Room <%= waitingRoom.roomID %></td>
+      <td>Players: <%= waitingRoom.playerCount %> / <%= waitingRoom.maxPlayers%></td>
+      <td><% if(waitingRoom.isAvailable) { %> 
+          <form method="post" action ="/selectRoom">
+          <input type="text" name="roomnumber" size="60" hidden='true' value='<%= waitingRoom.roomID%>' />
+          <input type="submit" value="Join"/>
+        </form>
+        <% } %>
+      </td>
+
+      
+    </tr>
+  <% }) %>
 </table>
 
 
 
-<form method="post" action ="/selectRoom">
-    <input type="text" name="roomnumber" size="60"/> choose ur room <br>
-    <input type="submit" value="Submit"/>
-  </form>
+
+
+  <%- include('bootfooter') -%>

@@ -45,6 +45,9 @@ const usersRouter = require('./routes/users');
 // Now we create the server
 const app = express();
 
+
+
+
 // Here we specify that we will be using EJS as our view engine
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -90,10 +93,12 @@ app.use('/users', usersRouter);
 
 
 console.log("I am running!")
-// var players: Player[] = [new Player(0),new Player(1)]
+
 
 import {WordGameApp} from './WordGameApp';
 const gameApp = new WordGameApp();
+
+
 
 
 // here we start handling routes
@@ -103,37 +108,117 @@ app.get("/", isLoggedIn, (req, res) => {
 });
 
 
+
+
+// Below is WAITING ROOM logic
 // joining room
 app.post("/selectRoom", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
   res.locals.roomid = req.body.roomnumber
 
+  if (req.body.roomnumber >= gameApp.waitingRooms.length){
+    res.render("roomSelection");
+    return 
+  }
+
   console.log(gameApp.waitingRooms[req.body.roomnumber].getPlayerCount())
+  gameApp.joinWaitingRoom(req.body.roomnumber,req.user)
+  refreshPage(req.body.roomnumber)
+  res.redirect("/waitingRoom")
+});
 
-  // gameApp.waitingRooms[req.body.roomnumber].join(req.user._id) // that's passing in the google ID
-
-  gameApp.joinRoom(req.body.roomnumber,req.user._id)
-  
+app.get("/waitingRoom", isLoggedIn, (req, res) => {
+  res.locals.gameApp = gameApp
+  res.locals.roomid = gameApp.roomLookup(req.user._id)
   res.render("waitingRoom");
 });
 
-
-
-// thjis 
+// This is coming from the waiting room
 app.post("/submitWord", isLoggedIn, (req, res) => {
-  // gameApp.waitingRoom.submitWord(req.body.word,req.user._id)
 
   gameApp.submitWord(req.body.word,req.user._id)
-
   res.locals.gameApp = gameApp
-  res.locals.userid = req.params.userid
   res.locals.roomid = gameApp.roomLookup(req.user._id)
 
-  res.render("waitingRoom");
+  // this checks for start of game... not the most elegant 
+  const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
+  if (submittingRoom.readyPlayerCount >= submittingRoom.maxPlayers){
+    gameApp.createGameRoom(submittingRoom.roomID)
+    sendToGame(submittingRoom.roomID)
+    res.redirect('/gameScreen')
+    return
+  }
+  refreshPage(submittingRoom.roomID)
+  res.redirect("/waitingRoom");
 });
 
 
 
+
+
+
+
+// This is for GAME routes
+
+app.get("/gameScreen", isLoggedIn, (req, res) => {
+  res.locals.gameApp = gameApp
+  res.locals.roomid = gameApp.roomLookup(req.user._id)
+
+  res.locals.currentUserId = req.user._id
+
+  console.log(gameApp.roomLookup(req.user._id))
+  res.render("gameScreen");
+});
+
+
+app.post('/guessLetter',(req,res) => {
+  res.locals.guess = req.body.guess 
+  res.locals.targetGoogleId = req.body.targetGoogleId
+
+  res.locals.gameApp = gameApp
+
+
+ 
+  const gameRoomId = gameApp.roomLookup(req.user._id);
+  var guessingPlayer = gameApp.gameRooms[gameRoomId].players[req.user._id]
+  var targetPlayer = gameApp.gameRooms[gameRoomId].players[req.body.targetGoogleId]
+
+  guessingPlayer.takeDamage(targetPlayer.guessLetter(req.body.guess))
+
+  gameApp.gameRooms[gameRoomId].checkDeath(targetPlayer)
+
+  gameApp.gameRooms[gameRoomId].passTurn()
+  refreshPage(gameRoomId)
+
+  res.redirect('/gameScreen')
+})
+
+
+
+
+
+
+// this is .. everything else routes
+
+app.get("/createRoom", isLoggedIn, (req, res) => {
+  res.render("createRoom");
+});
+
+app.post("/createRoom", isLoggedIn, (req, res) => {
+  console.log('post createroom')
+  gameApp.createWaitingRoom(req.body.maxPlayers)
+  res.redirect("/");
+});
+
+app.get("/joinGameMenuBar", isLoggedIn, (req, res) => {
+  res.locals.gameApp = gameApp
+  res.render("roomSelection");
+});
+
+app.get("/joinGame", isLoggedIn, (req, res) => {
+  res.locals.gameApp = gameApp
+  res.render("roomSelection");
+});
 
 
 // if not logged in, it shows the login thingy
@@ -157,43 +242,38 @@ app.get('/loginScreen', (req,res) => {
 })
 
 
-// app.post('/changeWord',(req,res) => {
-//   players[req.body.number].makeWord(req.body.word)
-//   res.locals.extrastuff = players.map(x => x.display())
-//   res.render('gameScreen')
-// })
-//
-// app.post('/guessWord',(req,res) => {
-//   const guess = req.body.guess
-//
-//   players[0].takeDamage(players[req.body.number].guessLetter(guess))
-//   res.locals.extrastuff = players.map(x => x.display())
-//   res.render('gameScreen')
-// })
+
+
+
+
 
 
 // app.get("/json", isLoggedIn, (req, res) => {
 //   res.render("json");
 // });
 //
-// app.get("/profile", isLoggedIn, (req, res) => {
-//   res.render("profile");
-// });
+app.get("/profile", isLoggedIn, (req, res) => {
+  res.render("profile");
+});
 //
-// app.post('/editProfile',
-//     isLoggedIn,
-//     async (req,res,next) => {
-//       try {
-//         let username = req.body.username
-//         let bio = req.body.bio
-//         req.user.username = username
-//         req.user.bio = bio
-//         await req.user.save()
-//         res.redirect('/profile')
-//       } catch (error) {
-//         next(error)
-//       }
-// })
+app.post('/editProfile',
+    isLoggedIn,
+    async (req,res,next) => {
+      try {
+        let username = req.body.username
+        let bio = req.body.bio
+        if (username !== ''){
+          req.user.username = username
+        }
+        if (bio !== ''){
+          req.user.bio = bio
+        }
+        await req.user.save()
+        res.redirect('/profile')
+      } catch (error) {
+        next(error)
+      }
+})
 //
 // app.post("/jsonResult",
 //   async (req,res,next) => {
@@ -214,45 +294,8 @@ app.get('/loginScreen', (req,res) => {
 //     }
 // })
 
-// ============================================================================================================================
-// this is for handling waiting room routes
-
-//
-// app.get("/room/:roomID/submitWord/", (req, res) => {
-//
-//   var word = req.body.word
-//
-//   // playerInfo[req.user.googleid] = req.body.word
-//   res.locals.playerInfo = req.body.playerInfo
-//   res.render("waitingRoom");
-// });
 
 
-// class waitingRoom{
-//   playerInfo: Player[];
-//
-//   constructor(input){
-//     var id = input
-//   }
-//
-//   updatePlayer(word){
-//     console.log(word)
-//   }
-// }
-//
-//   var rooms = []
-//
-//   function createRoom(roomID: number) {
-//     rooms.push(new waitingRoom(roomID))
-//   }
-//
-//   createRoom(20)
-//
-// // class Player{
-// //   word: string
-// //   googleID: user.googleID
-// // }
-//
 
 
 
@@ -272,6 +315,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get("env") === "development" ? err : {};
   // render the error page
   res.status(err.status || 500);
+  console.log(err)
   res.render("error");
 });
 
@@ -282,6 +326,44 @@ app.set("port", port);
 // and now we startup the server listening on that port
 const http = require("http");
 const server = http.createServer(app);
+
+// socket io!! =====================================================================================================
+const { Server } = require("socket.io");
+const io = new Server(server);
+
+const socketIdRoomMap: {[socketId: string]: number} = {}
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+
+  socket.on('roomid', (arg) => {
+    socketIdRoomMap[socket.id] = arg
+    console.log(socket.id, socketIdRoomMap[socket.id]);
+  });
+
+});
+
+// run on wordsubmit, refreshes
+function refreshPage(room: number){
+  for (let socketId in socketIdRoomMap){
+    if (socketIdRoomMap[socketId] == room){
+      io.to(socketId).emit("refresh");
+    }
+  }
+  
+}
+
+// this sends to evberyone lol
+function sendToGame(room: number){
+  for (let socketId in socketIdRoomMap){
+    if (socketIdRoomMap[socketId] == room){
+      io.to(socketId).emit("sendToGame");
+    }
+  }
+}
 
 server.listen(port);
 

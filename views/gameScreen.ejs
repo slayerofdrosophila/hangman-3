@@ -2,33 +2,59 @@
 
 <%- include('menubar') -%>
 
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+  var socket = io();
+  socket.emit("roomid",<%- roomid %>)
+
+  socket.on('refresh', function(msg) {
+    console.log("reloadign")
+    location.reload()
+  });
+
+</script>
+
 <div class="jumbotron">
+  
+
+
+</div>
+
+<div class="jumbotron">
+  turn player: <%= gameApp.gameRooms[roomid].players[gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer]].displayName %> <br>
+  <%= JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer])  === JSON.stringify(currentUserId) %> <br>
+
+  <% if( gameApp.gameRooms[roomid].winner != null ) { %> 
+    <h1>GAME FINISHED!</h1>
+    <h1>WINNER IS: <%= gameApp.gameRooms[roomid].winner.displayName %></h1>
+  <% } %>
 
 </div>
 
 <div class="container">
   <div class="row">
     <div class="col-sm">
-      <%- extrastuff %>
-    </div>
-    <div class="col-sm">
-      <hr>
-        <form method="post" action ="/changeWord">
-          <input type="text" name="word" size="60"/> set word <br>
-          <input type="submit" value="Submit"/>
-          <input type="text" name="number" size="60" value= this.number hidden='false'/>
-        </form>
 
-        <form method="post" action ="/guessWord">
-          <input type="text" name="guess" size="60"/> Guess letter <br/>
-          <input type="submit" value="Submit"/>
-          <select name = "number">
-            <option value = "0" selected>1</option>
-            <option value = "1">2</option>
-            <option value = "2">3</option>
-         </select>
-        </form> <hr>
+        <% Object.values(gameApp.gameRooms[roomid].players).forEach( function(player){%>
+          <hr>
+          <h4> <%= player.displayName %> </h4>
+          <h1> <%= player.word.underscoresString %> </h1>
+          <h3> Health: <%= player.health %> </h3>
+          <% if(gameApp.gameRooms[roomid].winner == null && JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer]) == JSON.stringify(currentUserId)) { %> 
+            <form method="post" action ="/guessLetter">
+              <input type="text" name="guess" size="1"/> Guess letter <br/>
+              <input type="submit" value="Submit" hidden='true'/>
+              <input type="text" name="targetGoogleId" size="60" value='<%= player.googleId %>' hidden='true'/>
+            </form> <hr>
+          <% } %>
+        <% }) %>
+        <%= %>
+
+
+      
     </div>
+
   </div>
 </div>
 

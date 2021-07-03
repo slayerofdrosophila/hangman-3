@@ -1,33 +1,38 @@
 import {Player} from './Player'
 
-export class waitingRoom{
+export class WaitingRoom{
 
   readyPlayerCount: number
   playerCount: number
   players: {[googleid:string]: Player}
   roomID: number
+  maxPlayers: number
 
-  constructor(id: number){
+  isAvailable: boolean
+
+  constructor(id: number,maxplayers:number){
     this.readyPlayerCount = 0
     this.playerCount = 0
     this.players = {}
     this.roomID = id
+    this.maxPlayers = maxplayers
+    this.isAvailable = true
   }
 
   // when a new player joins. creates a Player object for them
-  join(googleid:string){ // <marquee> UserID not escaped B) </marquee>
+  join(user:any){ // <marquee> UserID not escaped B) </marquee>
     this.playerCount++
-    this.players[googleid] = new Player(googleid)
+    console.log("PERSON JOIN")
+    this.players[user._id] = new Player(user)
   }
 
   submitWord(word:string, id:string){
     this.readyPlayerCount++
     this.players[id].makeWord(word)
 
-    if (this.readyPlayerCount == this.playerCount && this.playerCount > 1){
-      // game.start()
-      // send the players away
-      // destroy the roomk
+    if (this.readyPlayerCount >= this.playerCount && this.playerCount > 1){
+      console.log("waitingROom thinks it time to start game")
+      this.isAvailable = false
     }
   }
 
