@@ -320,7 +320,7 @@ app.use(function(err, req, res, next) {
 });
 
 //Here we set the port to use
-const port = "5000";
+const port = process.env.PORT || "5000";
 app.set("port", port);
 
 // and now we startup the server listening on that port
