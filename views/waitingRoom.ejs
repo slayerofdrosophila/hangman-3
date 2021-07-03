@@ -42,7 +42,6 @@
   <% Object.keys(gameApp.waitingRooms[roomid].players).forEach(googleid => {%>
     <tr>
       <td> <%= gameApp.waitingRooms[roomid].players[googleid].displayName %></td>
-      <td> <%= gameApp.waitingRooms[roomid].players[googleid].word.word %> </td>
     </tr>
   <% }) %>
 </table>
