@@ -1,5 +1,5 @@
 import {WaitingRoom} from './waitingRoom'
-import {GameRoom} from './GameStuff'
+import {GameRoom} from './gameStuff'
 
 export class WordGameApp{
 
