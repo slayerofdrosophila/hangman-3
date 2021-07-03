@@ -42,6 +42,9 @@ module.exports = function(passport) {
     const clientSecret = configAuth.googleAuth.clientSecret
     const callbackURL = configAuth.googleAuth.callbackURL
 
+    console.log(configAuth)
+    console.log(process.env.Google_OAuth_App_ClientID)
+
 
 /*
     const clientID = process.env.clientID
