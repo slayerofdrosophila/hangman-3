@@ -17,7 +17,7 @@ export class WordGameApp{
 
   resetRoom(number){
     this.waitingRooms[number].resetRoom()
-    this.gameRooms[number]
+    // gameRoom will get replaced and original one gets destroyed
   }
 
   createGameRoom(roomid: number){

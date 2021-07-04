@@ -18,7 +18,11 @@ export class PlayerWord {
 
     this.underscoresList = []
     for (var c in this.wordList) {
-      this.underscoresList.push('-')
+      if (this.wordList[c] == " "){
+        this.underscoresList.push(' ')
+      } else{
+        this.underscoresList.push('-')
+      }
     }
   }
 

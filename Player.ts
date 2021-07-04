@@ -30,7 +30,7 @@ export class Player{
   }
 
   makeWord(input){
-    this.word.makeWord(input)
+    this.word.makeWord(input.toUpperCase())
     this.word.getDashes()
   }
 
@@ -50,8 +50,9 @@ export class Player{
   }
   
   guessLetter(input){
+    input = input.toUpperCase()
     var result = this.word.guessLetter(input) // returns 0 if correct, 1 if incorrect
-    if (result = 1){
+    if (result == 1){
       this.guessedLetters.push(input)
     }
     return result
