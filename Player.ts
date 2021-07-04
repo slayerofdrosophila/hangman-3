@@ -9,6 +9,8 @@ export class Player{
   word: PlayerWord
   user: any
 
+  guessedLetters: string[] = []
+
   // output:string
   // id:number
   health:number
@@ -48,6 +50,7 @@ export class Player{
   }
   
   guessLetter(input){
+    this.guessedLetters.push(input)
     return this.word.guessLetter(input)
   }
 
