@@ -5,10 +5,8 @@ export class GameRoom{
     playercount: number = -1
     players: {[googleid:string]: Player} = {}
     roomid: number = -1
-
     playerIds: string[] = []
     turnPlayer: number = 0 // the index of playerIds whose tiuirn it sis
-
     winner: Player = null
 
     constructor(players: {[googleid:string]: Player}, roomid: number){
@@ -46,7 +44,10 @@ export class GameRoom{
                 }
             }       
         }
+    }
 
+    checkGameOver(){
+        // declares the winner, also adds win to profile
         if (this.playerIds.length == 1){
             this.winner = this.players[this.playerIds[0]]
             
@@ -56,7 +57,10 @@ export class GameRoom{
                 this.winner.user.wins += 1
             }
             this.winner.user.save()
+            return true
+        }
+        else{
+            return false
         }
     }
-
 }

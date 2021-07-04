@@ -186,6 +186,9 @@ app.post('/guessLetter',(req,res) => {
   guessingPlayer.takeDamage(targetPlayer.guessLetter(req.body.guess))
 
   gameApp.gameRooms[gameRoomId].checkDeath(targetPlayer)
+  if (gameApp.gameRooms[gameRoomId].checkGameOver()){
+    gameApp.resetRoom(gameRoomId)
+  }
 
   gameApp.gameRooms[gameRoomId].passTurn()
   refreshPage(gameRoomId)

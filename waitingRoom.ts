@@ -7,7 +7,6 @@ export class WaitingRoom{
   players: {[googleid:string]: Player}
   roomID: number
   maxPlayers: number
-
   isAvailable: boolean
 
   constructor(id: number,maxplayers:number){
@@ -34,6 +33,13 @@ export class WaitingRoom{
       console.log("waitingROom thinks it time to start game")
       this.isAvailable = false
     }
+  }
+
+  resetRoom(){
+    this.readyPlayerCount = 0
+    this.playerCount = 0
+    this.players = {}
+    this.isAvailable = true
   }
 
 

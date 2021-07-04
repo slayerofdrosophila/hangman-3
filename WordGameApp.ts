@@ -15,11 +15,14 @@ export class WordGameApp{
     }
   }
 
+  resetRoom(number){
+    this.waitingRooms[number].resetRoom()
+    this.gameRooms[number]
+  }
+
   createGameRoom(roomid: number){
     this.gameRooms[roomid] = (new GameRoom(this.waitingRooms[roomid].players, roomid))
   }
-
-
 
   createWaitingRoom(maxplayers: number){
     this.waitingRooms.push(new WaitingRoom(this.waitingRooms.length,maxplayers))

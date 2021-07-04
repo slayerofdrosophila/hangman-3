@@ -40,7 +40,7 @@
           <hr>
           <h4> <%= player.displayName %> </h4>
           <h1> <%= player.word.underscoresString %> </h1>
-          <h6> <%= player.guessedLetters %> </h6>
+          <h6> <%= player.guessedLetters.join(' ') %> </h6>
           <h3> Health: <%= player.health %> </h3>
           <% if(gameApp.gameRooms[roomid].winner == null && JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer]) == JSON.stringify(currentUserId)) { %> 
             <form method="post" action ="/guessLetter">

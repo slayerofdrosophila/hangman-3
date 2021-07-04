@@ -50,8 +50,11 @@ export class Player{
   }
   
   guessLetter(input){
-    this.guessedLetters.push(input)
-    return this.word.guessLetter(input)
+    var result = this.word.guessLetter(input) // returns 0 if correct, 1 if incorrect
+    if (result = 1){
+      this.guessedLetters.push(input)
+    }
+    return result
   }
 
   takeDamage(input){
