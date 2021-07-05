@@ -2,6 +2,16 @@
 
 <%- include('menubar') -%>
 
+<% if( true || user.username == "" || user.username == null ) { %> 
+  <h2>Thanks for joining!</h2>
+  <h4>Please set a display name before joining a game.</h4>
+  <a class="btn btn-danger" href="/profile">
+    <span> Click me</span>
+  </a>
+<% } %>
+
+<br>
+<br>
 
 <table class="table table-bordered table-striped">
   <% gameApp.waitingRooms.forEach(waitingRoom => {%>

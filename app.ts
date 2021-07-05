@@ -104,6 +104,10 @@ const gameApp = new WordGameApp();
 // here we start handling routes
 app.get("/", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
+  if (true || req.user.username == null || req.user.username == ''){
+    res.locals.user = req.user
+    res.render('newUserOnboard')
+  } 
   res.render("roomSelection");
 });
 
@@ -215,6 +219,7 @@ app.post("/createRoom", isLoggedIn, (req, res) => {
 
 app.get("/joinGameMenuBar", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
+  res.locals.user = req.user
   res.render("roomSelection");
 });
 
@@ -272,6 +277,9 @@ app.post('/editProfile',
           req.user.bio = bio
         }
         await req.user.save()
+        if (req.body.new == "true"){
+          res.render('newUserOnboard')
+        }
         res.redirect('/profile')
       } catch (error) {
         next(error)

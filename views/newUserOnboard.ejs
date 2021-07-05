@@ -1,0 +1,19 @@
+<%- include('bootheader') -%>
+<%- include('menubar') -%>
+
+<h2>Thanks for joining!</h2>
+<h4>Please set a display name before joining a game.</h4>
+
+<h4>Display name: <%= user.username %> </h4>
+
+<form method="post" action ="/editProfile">
+    <input type="text" name="username"/>
+    <input type="submit" value="Submit"/>
+    <input type="text" name="new" hidden="true" value="true"/>
+  </form>
+
+<h4>If you want to learn how to play, you can click "help" in the menu bar at any time.</h4>
+<h4>This game is still under intense development, so I hope you excuse the "features" present.</h4>
+
+
+<%- include('bootfooter') -%>
