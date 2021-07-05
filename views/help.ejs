@@ -1,0 +1,37 @@
+<%- include('bootheader') -%>
+<%- include('menubar') -%>
+
+<h1>How to play the game:</h1>
+<p>
+    Hangman, but each player has their own word.
+    Every player takes turns guessing the other players' words, one letter at a time.
+    When a player's word is fully filled out, or they run out of health from guessing incorrectly, that player is out.
+    The last one standing wins!
+</p>
+
+<h3>Navigating the website</h3>
+<p>
+    The main page shows a list of "rooms" available to join.
+    Click "Join" on any room to join it.
+</p>
+<p>
+    Once in that room, input a word into the text box and press Enter / click Submit.
+    When each player has submitted a word, the game will begin.
+</p>
+
+<h4>Known issues with the rooms:</h4>
+<li>A room cannot start unless the same amount of words as the room's maximum are submited.</li>
+<li>A room will not know when a user leaves it.</li>
+<li>Submitting a word multiple times will result in the player being counted multiple times, starting the game early. (A possible workaround to rooms needing an exact number. (There is a create room button though.))</li>
+
+<hr>
+
+<h3>Navigating the game</h3>
+<p>The turn order goes from top to bottom.</p>
+<p>When it is your turn, text boxes will appear under each player. Type a letter into the box under the player whose letter you would like to guess.</p>
+<p>If you are eliminated, the turn order will automatically pass you.</p>
+
+<h4>Known issues with the game:</h4>
+<li>Turn order is deterministic.</li>
+<li>Waiting in the finished room while another game starts in the same room number will result in the player being a spectator. (The player is not stuck and can leave at any time.)</li>
+<%- include('bootfooter') -%>

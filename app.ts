@@ -104,7 +104,7 @@ const gameApp = new WordGameApp();
 // here we start handling routes
 app.get("/", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
-  if (true || req.user.username == null || req.user.username == ''){
+  if ( req.user.username == null || req.user.username == ''){
     res.locals.user = req.user
     res.render('newUserOnboard')
   } 
@@ -228,41 +228,22 @@ app.get("/joinGame", isLoggedIn, (req, res) => {
   res.render("roomSelection");
 });
 
-
-// if not logged in, it shows the login thingy
-// app.get('/word', isLoggedIn, (req,res) => {
-//     async (req,res,next) => {
-//       try {
-//         res.locals.extrastuff = ''
-//         for (var player of players){
-//           res.locals.extrastuff += player.display()
-//         }
-//         res.render('gameScreen')
-//       }
-//       catch(error){
-//         next(error)
-//       }
-//     }
-// })
-
 app.get('/loginScreen', (req,res) => {
   res.render('loginScreen')
 })
 
+app.get("/help", isLoggedIn, (req, res) => {
+  res.render("help");
+});
 
 
 
 
 
-
-
-// app.get("/json", isLoggedIn, (req, res) => {
-//   res.render("json");
-// });
-//
 app.get("/profile", isLoggedIn, (req, res) => {
   res.render("profile");
 });
+
 //
 app.post('/editProfile',
     isLoggedIn,
@@ -285,26 +266,6 @@ app.post('/editProfile',
         next(error)
       }
 })
-//
-// app.post("/jsonResult",
-//   async (req,res,next) => {
-//     try {
-//       const url = req.body.url
-//       const key = req.body.key
-//
-//       const result = await axios.get("https://abusiveexperiencereport.googleapis.com/v1/sites/" + url + "?key=" + key)
-//
-//       res.locals.abusiveStatus = result.data.abusiveStatus
-//       res.locals.url = req.body.url
-//       res.locals.key = req.body.key
-//
-//       console.log(result.data)
-//       res.render('jsonResult')
-//     } catch(error){
-//       next(error)
-//     }
-// })
-
 
 
 
