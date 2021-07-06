@@ -11,7 +11,9 @@ export class WordGameApp{
 
   constructor(){
     for (let i = 0; i<4; i++){
-      this.waitingRooms.push(new WaitingRoom(i,i+1))
+
+      // (ID, minplayers, maxplayers)
+      this.waitingRooms.push(new WaitingRoom(i,2,9))
     }
   }
 
@@ -24,8 +26,9 @@ export class WordGameApp{
     this.gameRooms[roomid] = (new GameRoom(this.waitingRooms[roomid].players, roomid))
   }
 
-  createWaitingRoom(maxplayers: number){
-    this.waitingRooms.push(new WaitingRoom(this.waitingRooms.length,maxplayers))
+  createWaitingRoom(minplayers: number,maxplayers: number){
+    this.waitingRooms.push(new WaitingRoom(this.waitingRooms.length,minplayers,maxplayers))
+    return this.waitingRooms.length - 1
   }
 
   joinWaitingRoom(roomid: string, user: any){

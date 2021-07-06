@@ -113,7 +113,6 @@ app.get("/", isLoggedIn, (req, res) => {
 
 
 
-
 // Below is WAITING ROOM logic
 // joining room
 app.post("/selectRoom", isLoggedIn, (req, res) => {
@@ -125,7 +124,6 @@ app.post("/selectRoom", isLoggedIn, (req, res) => {
     return 
   }
 
-  console.log(gameApp.waitingRooms[req.body.roomnumber].getPlayerCount())
   gameApp.joinWaitingRoom(req.body.roomnumber,req.user)
   refreshPage(req.body.roomnumber)
   res.redirect("/waitingRoom")
@@ -134,6 +132,7 @@ app.post("/selectRoom", isLoggedIn, (req, res) => {
 app.get("/waitingRoom", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
   res.locals.roomid = gameApp.roomLookup(req.user._id)
+  res.locals.googleid = req.user._id
   res.render("waitingRoom");
 });
 
@@ -146,7 +145,9 @@ app.post("/submitWord", isLoggedIn, (req, res) => {
 
   // this checks for start of game... not the most elegant 
   const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
-  if (submittingRoom.readyPlayerCount >= submittingRoom.maxPlayers){
+  
+  // isAvailable is turned to false when the room decides it's ready, through whatever means
+  if (!submittingRoom.isAvailable){
     gameApp.createGameRoom(submittingRoom.roomID)
     sendToGame(submittingRoom.roomID)
     res.redirect('/gameScreen')
@@ -154,6 +155,20 @@ app.post("/submitWord", isLoggedIn, (req, res) => {
   }
   refreshPage(submittingRoom.roomID)
   res.redirect("/waitingRoom");
+});
+
+app.post("/startRoom", isLoggedIn, (req, res) => {
+
+  res.locals.gameApp = gameApp
+  res.locals.roomid = gameApp.roomLookup(req.user._id)
+
+  // Start sequence from submitWord route
+  const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
+  submittingRoom.isAvailable = false
+  gameApp.createGameRoom(submittingRoom.roomID)
+  sendToGame(submittingRoom.roomID)
+  refreshPage(submittingRoom.roomID)
+  res.redirect('/gameScreen')
 });
 
 
@@ -207,14 +222,17 @@ app.post('/guessLetter',(req,res) => {
 
 // this is .. everything else routes
 
+// this just brings u to the page to submit the form
 app.get("/createRoom", isLoggedIn, (req, res) => {
   res.render("createRoom");
 });
 
+// this is FROM the form
 app.post("/createRoom", isLoggedIn, (req, res) => {
   console.log('post createroom')
-  gameApp.createWaitingRoom(req.body.maxPlayers)
-  res.redirect("/");
+  var roomNo = gameApp.createWaitingRoom(req.body.minPlayers,req.body.maxPlayers)
+  gameApp.joinWaitingRoom(roomNo.toString(),req.user)
+  res.redirect("/waitingRoom");
 });
 
 app.get("/joinGameMenuBar", isLoggedIn, (req, res) => {

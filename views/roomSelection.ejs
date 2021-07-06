@@ -11,7 +11,7 @@
       <td>Players: <%= waitingRoom.playerCount %> / <%= waitingRoom.maxPlayers%></td>
       <td><% if(waitingRoom.isAvailable) { %> 
           <form method="post" action ="/selectRoom">
-          <input type="text" name="roomnumber" size="60" hidden='true' value='<%= waitingRoom.roomID%>' />
+          <input type="text" name="roomnumber" hidden='true' value='<%= waitingRoom.roomID%>' />
           <input type="submit" value="Join"/>
         </form>
         <% } %>

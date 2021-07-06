@@ -19,17 +19,27 @@
 </script>
 
 
-
+<h4>Room <%= roomid %> </h4>
 
 <div>
-  There are <%= gameApp.waitingRooms[roomid].getReadyPlayerCount()%> / <%= gameApp.waitingRooms[roomid].maxPlayers%> players ready. <br>
+  There are <%= gameApp.waitingRooms[roomid].readyPlayers.length %> / <%= gameApp.waitingRooms[roomid].maxPlayers%> (<%= gameApp.waitingRooms[roomid].minPlayers %>) players ready. <br>
   There are <%= gameApp.waitingRooms[roomid].getPlayerCount()%> players in this room. <br>
 </div>
+<br>
 
-<form method="post" action ="/submitWord">
+
+<form method="post" action ="/submitWord" autocomplete="off">
   <input type="text" name="word" /> write your word <br>
   <input type="submit" value="Submit"/>
 </form>
+
+<br>
+
+<% if ( gameApp.waitingRooms[roomid].readyPlayers.length >= gameApp.waitingRooms[roomid].minPlayers && gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
+  <form method="post" action ="/startRoom" autocomplete="off">
+    <input type="submit" value="Start Game Early"/>
+  </form> <hr>
+<% } %>
 
 <br>
 
@@ -37,11 +47,17 @@
     <thead>
       <tr>
         <td>Connected players:</td>
+        <td>Text</td>
       </tr>
     </thead>
   <% Object.keys(gameApp.waitingRooms[roomid].players).forEach(googleid => {%>
     <tr>
       <td> <%= gameApp.waitingRooms[roomid].players[googleid].displayName %></td>
+      <td>
+        <% if (gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
+          <p>Host</p>
+        <% } %>
+      </td>
     </tr>
   <% }) %>
 </table>

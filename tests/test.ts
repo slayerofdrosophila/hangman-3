@@ -1,4 +1,5 @@
 import {Player} from '../Player'
+import {WordGameApp} from '../WordGameApp'
 
 var assert = require('assert');
 
@@ -25,11 +26,21 @@ describe('Array', function() {
       assert.equal(o,"------ -----")
     });
   });
+
+  describe('ready players', function() {
+    it('test 2', function() {
+
+      gameApp.joinWaitingRoom("0",user)
+      testWR.submitWord("test word",user.id)
+
+      console.log(testWR.playerCount)
+    });
+  });
+
 });
 
-class Hello {
-  addone(x: number){
-    return x+1
-  }
-}
+const user = {id:'id'}
+const player = new Player(user)
+const gameApp = new WordGameApp
 
+const testWR = gameApp.waitingRooms[0]

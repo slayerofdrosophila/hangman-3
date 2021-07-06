@@ -2,44 +2,64 @@ import {Player} from './Player'
 
 export class WaitingRoom{
 
-  readyPlayerCount: number
-  playerCount: number
-  players: {[googleid:string]: Player}
-  roomID: number
-  maxPlayers: number
-  isAvailable: boolean
+  roomID: number = -1
+  minPlayers: number = -1
+  maxPlayers: number = -1
 
-  constructor(id: number,maxplayers:number){
-    this.readyPlayerCount = 0
-    this.playerCount = 0
-    this.players = {}
+  playerCount: number = 0
+  players: {[googleid:string]: Player} = {}
+  firstPlayer: Player = null
+
+  readyPlayerCount: number = 0
+  readyPlayers: Player[] = []
+  
+  // Time for the players to press the buttons?
+  isReadyToStart: boolean = false
+  // Time for the players to get kicked to the next room?
+  isAvailable: boolean = true
+  
+
+  constructor(id: number,minplayers: number,maxplayers:number){
     this.roomID = id
+    this.minPlayers = minplayers
     this.maxPlayers = maxplayers
-    this.isAvailable = true
   }
 
   // when a new player joins. creates a Player object for them
-  join(user:any){ // <marquee> UserID not escaped B) </marquee>
+  join(user:any){ 
     this.playerCount++
     console.log("PERSON JOIN")
     this.players[user._id] = new Player(user)
+    if (this.firstPlayer == null){
+      this.firstPlayer = this.players[user._id]
+    }
   }
 
   submitWord(word:string, id:string){
-    this.readyPlayerCount++
     this.players[id].makeWord(word)
 
-    if (this.readyPlayerCount >= this.playerCount && this.playerCount > 1){
-      console.log("waitingROom thinks it time to start game")
+    // only puts them in if theyre not in there
+    if (this.readyPlayers.indexOf(this.players[id]) == -1){
+      this.readyPlayers.push(this.players[id])
+    }
+
+    // max capacity
+    if (this.readyPlayers.length == this.maxPlayers){
+      console.log("waitingRoom",this.roomID,"is ready to start")
       this.isAvailable = false
+      this.isReadyToStart = true
     }
   }
+
 
   resetRoom(){
     this.readyPlayerCount = 0
     this.playerCount = 0
     this.players = {}
     this.isAvailable = true
+    this.readyPlayers = []
+    this.isReadyToStart = false
+    this.firstPlayer = null
   }
 
 
@@ -47,9 +67,7 @@ export class WaitingRoom{
     return this.playerCount
   }
 
-  getReadyPlayerCount(){
-    return this.readyPlayerCount
-  }
+ 
 
   
 }

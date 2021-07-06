@@ -2,7 +2,8 @@
 <%- include('menubar') -%>
 
 <form method="post" action ="/createRoom">
-    <input type="text" name="maxPlayers" /> Room size (Room will not start until the number is reached) <br>
+    <input type="text" name="minPlayers" /> Minimum players (game can be started manually at this number) <br>
+    <input type="text" name="maxPlayers" /> Maximum players  <br>
     <input type="submit" value="Submit"/>
   </form>
 
