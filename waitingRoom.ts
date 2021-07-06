@@ -8,6 +8,7 @@ export class WaitingRoom{
 
   playerCount: number = 0
   players: {[googleid:string]: Player} = {}
+  playerIds: string[] = []
   firstPlayer: Player = null
 
   readyPlayerCount: number = 0
@@ -29,7 +30,14 @@ export class WaitingRoom{
   join(user:any){ 
     this.playerCount++
     console.log("PERSON JOIN")
+
     this.players[user._id] = new Player(user)
+
+    if (this.playerIds.indexOf(this.playerIds[user._id]) == -1){
+      this.playerIds.push(user._id)
+      console.log(user._id)
+    }
+
     if (this.firstPlayer == null){
       this.firstPlayer = this.players[user._id]
     }
@@ -60,6 +68,8 @@ export class WaitingRoom{
     this.readyPlayers = []
     this.isReadyToStart = false
     this.firstPlayer = null
+    
+    this.playerIds = []
   }
 
 

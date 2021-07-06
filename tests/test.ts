@@ -31,16 +31,23 @@ describe('Array', function() {
     it('test 2', function() {
 
       gameApp.joinWaitingRoom("0",user)
-      testWR.submitWord("test word",user.id)
+      gameApp.joinWaitingRoom("0",user)
+      gameApp.joinWaitingRoom("0",user)
+      gameApp.joinWaitingRoom("0",user)
+      gameApp.joinWaitingRoom("0",user)
+      gameApp.joinWaitingRoom("0",user)
+
+      assert.equal(gameApp.waitingRooms[0].playerIds.length, 1)
+      
 
       console.log(testWR.playerCount)
     });
+    
   });
 
 });
 
-const user = {id:'id'}
+const user = {_id:'id'}
 const player = new Player(user)
 const gameApp = new WordGameApp
-
 const testWR = gameApp.waitingRooms[0]

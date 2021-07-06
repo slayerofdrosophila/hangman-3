@@ -8,7 +8,7 @@
   <% gameApp.waitingRooms.forEach(waitingRoom => {%>
     <tr>
       <td>Room <%= waitingRoom.roomID %></td>
-      <td>Players: <%= waitingRoom.playerCount %> / <%= waitingRoom.maxPlayers%></td>
+      <td>Players: <%= waitingRoom.playerIds.length %> / <%= waitingRoom.maxPlayers%></td>
       <td><% if(waitingRoom.isAvailable) { %> 
           <form method="post" action ="/selectRoom">
           <input type="text" name="roomnumber" hidden='true' value='<%= waitingRoom.roomID%>' />
