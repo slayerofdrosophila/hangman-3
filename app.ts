@@ -80,25 +80,18 @@ app.use(function(req, res, next) {
   next();
 });
 
-
-
 app.use(authRouter)
 app.use(loggingRouter);
 // app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-
-
-
-
-
 console.log("I am running!")
+
+
 
 
 import {WordGameApp} from './WordGameApp';
 const gameApp = new WordGameApp();
-
-
 
 
 // here we start handling routes
@@ -110,6 +103,11 @@ app.get("/", isLoggedIn, (req, res) => {
   } 
   res.render("roomSelection");
 });
+
+
+
+
+
 
 
 
@@ -143,9 +141,9 @@ app.post("/submitWord", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
   res.locals.roomid = gameApp.roomLookup(req.user._id)
 
-  // this checks for start of game... not the most elegant 
   const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
   
+  // if this is the final word put in, start game
   // isAvailable is turned to false when the room decides it's ready, through whatever means
   if (!submittingRoom.isAvailable){
     gameApp.createGameRoom(submittingRoom.roomID)
@@ -156,6 +154,8 @@ app.post("/submitWord", isLoggedIn, (req, res) => {
   refreshPage(submittingRoom.roomID)
   res.redirect("/waitingRoom");
 });
+
+
 
 app.post("/startRoom", isLoggedIn, (req, res) => {
 
@@ -193,23 +193,9 @@ app.get("/gameScreen", isLoggedIn, (req, res) => {
 app.post('/guessLetter',(req,res) => {
   res.locals.guess = req.body.guess 
   res.locals.targetGoogleId = req.body.targetGoogleId
-
   res.locals.gameApp = gameApp
 
-
- 
-  const gameRoomId = gameApp.roomLookup(req.user._id);
-  var guessingPlayer = gameApp.gameRooms[gameRoomId].players[req.user._id]
-  var targetPlayer = gameApp.gameRooms[gameRoomId].players[req.body.targetGoogleId]
-
-  guessingPlayer.takeDamage(targetPlayer.guessLetter(req.body.guess))
-
-  gameApp.gameRooms[gameRoomId].checkDeath(targetPlayer)
-  if (gameApp.gameRooms[gameRoomId].checkGameOver()){
-    gameApp.resetRoom(gameRoomId)
-  }
-
-  gameApp.gameRooms[gameRoomId].passTurn()
+  const gameRoomId = gameApp.guessLetter(req.user, req.body.targetGoogleId, req.body.guess);
   refreshPage(gameRoomId)
 
   res.redirect('/gameScreen')
@@ -335,6 +321,8 @@ io.on('connection', (socket) => {
   });
 
 });
+
+
 
 // run on wordsubmit, refreshes
 function refreshPage(room: number){

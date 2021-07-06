@@ -17,6 +17,22 @@ export class WordGameApp{
     }
   }
 
+  guessLetter(user: any, targetGoogleId: any, guess: any) {
+    const gameRoomId = this.roomLookup(user._id);
+    var guessingPlayer = this.gameRooms[gameRoomId].players[user._id];
+    var targetPlayer = this.gameRooms[gameRoomId].players[targetGoogleId];
+    
+    guessingPlayer.takeDamage(targetPlayer.guessLetter(guess));
+  
+    this.gameRooms[gameRoomId].checkDeath(targetPlayer);
+    if (this.gameRooms[gameRoomId].checkGameOver()) {
+      this.resetRoom(gameRoomId);
+    }
+  
+    this.gameRooms[gameRoomId].passTurn();
+    return gameRoomId;
+  }
+
   resetRoom(number){
     this.waitingRooms[number].resetRoom()
     // gameRoom will get replaced and original one gets destroyed

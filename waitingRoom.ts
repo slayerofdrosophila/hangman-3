@@ -33,7 +33,7 @@ export class WaitingRoom{
 
     this.players[user._id] = new Player(user)
 
-    if (this.playerIds.indexOf(this.playerIds[user._id]) == -1){
+    if (this.playerIds.indexOf(user._id) == -1){
       this.playerIds.push(user._id)
       console.log(user._id)
     }
