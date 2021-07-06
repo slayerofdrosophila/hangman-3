@@ -34,7 +34,10 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-sm">
+    <div class="col-sm"<% if( JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer])  === JSON.stringify(currentUserId) ) { %> 
+      style="background-color:#d6d6d6"
+    <% } %>
+  >
 
         <% Object.values(gameApp.gameRooms[roomid].players).forEach( function(player){%>
           <hr>
