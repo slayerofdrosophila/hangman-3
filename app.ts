@@ -207,6 +207,17 @@ app.post('/guessLetter',(req,res) => {
 
 
 // this is .. everything else routes
+app.post("/adminDeleteRoom", isLoggedIn, (req, res) => {
+  if (process.env.ADMIN_PASSWORD == req.body.password){
+    gameApp.resetRoom(req.body.roomnumber)
+  }
+  res.redirect("/");
+});
+
+app.get("/admin", isLoggedIn, (req, res) => {
+  res.render("adminPanel");
+});
+
 
 // this just brings u to the page to submit the form
 app.get("/createRoom", isLoggedIn, (req, res) => {
