@@ -34,17 +34,19 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-sm"<% if( JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer])  === JSON.stringify(currentUserId) ) { %> 
-      style="background-color:#d6d6d6"
-    <% } %>
-  >
+    <div>
 
         <% Object.values(gameApp.gameRooms[roomid].players).forEach( function(player){%>
-          <hr>
+
+          <div class="col-sm"<% if( JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer])  === JSON.stringify(player.googleId)  ) { %> 
+            style="background-color:#d6d6d6"
+          <% } %>>
+            <hr>
           <h4> <%= player.displayName %> </h4>
           <h1> <%= player.word.underscoresString %> </h1>
           <h6> <%= player.guessedLetters.join(' ') %> </h6>
           <h4> Health: <%= player.health %> </h4>
+
           <% if(gameApp.gameRooms[roomid].winner == null && JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer]) == JSON.stringify(currentUserId)) { %> 
             <form method="post" action ="/guessLetter" autocomplete="off">
               <input type="text" name="guess" size="6"/> 
@@ -52,6 +54,9 @@
               <input type="text" name="targetGoogleId" value='<%= player.googleId %>' hidden='true'/>
             </form> <hr>
           <% } %>
+            
+          </div>
+          
         <% }) %>
         <%= %>
 

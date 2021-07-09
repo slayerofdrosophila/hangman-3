@@ -1,6 +1,8 @@
 <%- include('bootheader') -%>
 <%- include('menubar') -%>
 
+<a href="#changelog">changelog </a>
+
 <h1>How to play the game:</h1>
 <p>
     Hangman, but each player has their own word.
@@ -20,8 +22,7 @@
 </p>
 
 <h4>Known issues with the rooms:</h4>
-<li>A room cannot start unless the same amount of words as the room's maximum are submited.</li>
-<li>A room will not know when a user leaves it.</li>
+<li>A room will not know when a user leaves it. (Changed so that it doesn't care .. usually)</li>
 <li>Submitting a word multiple times will result in the player being counted multiple times, starting the game early. (A possible workaround to rooms needing an exact number. (There is a create room button though.))</li>
 
 <hr>
@@ -34,4 +35,18 @@
 <h4>Known issues with the game:</h4>
 <li>Turn order is deterministic.</li>
 <li>Waiting in the finished room while another game starts in the same room number will result in the player being a spectator. (The player is not stuck and can leave at any time.)</li>
+
+
+
+<h2><a id="changelog"></a> Changelog</h2> 
+
+<h4>Release 2</h4>
+<li>List of guessed letters</li>
+<li>Start rooms early when they reach the minimum number of players</li>
+<li>Mneu bar works</li>
+<li>can you find the secret ?????</li>
+<li>Turn player is highlighted</li>
+
+
+
 <%- include('bootfooter') -%>
