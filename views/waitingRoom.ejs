@@ -22,7 +22,8 @@
 <h4>Room <%= roomid %> </h4>
 
 <div>
-  There are <%= gameApp.waitingRooms[roomid].readyPlayers.length %> / <%= gameApp.waitingRooms[roomid].maxPlayers%> (<%= gameApp.waitingRooms[roomid].minPlayers %>) players ready. <br>
+  There are <%= gameApp.waitingRooms[roomid].readyPlayers.length %> / 
+  <%= gameApp.waitingRooms[roomid].minPlayers %> - <%= gameApp.waitingRooms[roomid].maxPlayers%> players ready. <br>
   There are <%= gameApp.waitingRooms[roomid].playerIds.length %> players in this room. <br>
 </div>
 <br>
@@ -47,15 +48,19 @@
     <thead>
       <tr>
         <td>Connected players:</td>
-        <td>Text</td>
+        <td>Status</td>
       </tr>
     </thead>
   <% Object.keys(gameApp.waitingRooms[roomid].players).forEach(googleid => {%>
     <tr>
-      <td> <%= gameApp.waitingRooms[roomid].players[googleid].displayName %></td>
       <td>
         <% if (gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
-          <p>Host</p>
+          [Host]
+        <% } %>
+        <%= gameApp.waitingRooms[roomid].players[googleid].displayName %></td>
+      <td>
+        <% if (gameApp.waitingRooms[roomid].readyPlayers.indexOf(gameApp.waitingRooms[roomid].players[googleid]) != -1){ %>
+          [Ready]
         <% } %>
       </td>
     </tr>

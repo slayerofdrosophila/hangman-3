@@ -10,7 +10,7 @@ export class WordGameApp{
   gameRooms: GameRoom[] = []
 
   constructor(){
-    for (let i = 0; i<4; i++){
+    for (let i = 0; i<1; i++){
 
       // (ID, minplayers, maxplayers)
       this.waitingRooms.push(new WaitingRoom(i,2,9))
@@ -26,7 +26,7 @@ export class WordGameApp{
   
     this.gameRooms[gameRoomId].checkDeath(targetPlayer);
     if (this.gameRooms[gameRoomId].checkGameOver()) {
-      this.resetRoom(gameRoomId);
+      // this.resetRoom(gameRoomId);
     }
   
     this.gameRooms[gameRoomId].passTurn();

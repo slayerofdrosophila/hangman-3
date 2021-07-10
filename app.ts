@@ -131,7 +131,14 @@ app.get("/waitingRoom", isLoggedIn, (req, res) => {
   res.locals.gameApp = gameApp
   res.locals.roomid = gameApp.roomLookup(req.user._id)
   res.locals.googleid = req.user._id
-  res.render("waitingRoom");
+  
+  const playerRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
+  if (playerRoom.isAvailable) {
+    res.render("waitingRoom");
+  } else {
+    res.locals.currentUserId = req.user._id
+    res.render("gameScreen");
+  }
 });
 
 // This is coming from the waiting room
@@ -147,8 +154,8 @@ app.post("/submitWord", isLoggedIn, (req, res) => {
   // isAvailable is turned to false when the room decides it's ready, through whatever means
   if (!submittingRoom.isAvailable){
     gameApp.createGameRoom(submittingRoom.roomID)
-    sendToGame(submittingRoom.roomID)
-    res.redirect('/gameScreen')
+    refreshPage(submittingRoom.roomID)
+    res.redirect('/waitingRoom')
     return
   }
   refreshPage(submittingRoom.roomID)
@@ -166,9 +173,8 @@ app.post("/startRoom", isLoggedIn, (req, res) => {
   const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
   submittingRoom.isAvailable = false
   gameApp.createGameRoom(submittingRoom.roomID)
-  sendToGame(submittingRoom.roomID)
   refreshPage(submittingRoom.roomID)
-  res.redirect('/gameScreen')
+  res.redirect('/waitingRoom')
 });
 
 
@@ -179,16 +185,6 @@ app.post("/startRoom", isLoggedIn, (req, res) => {
 
 // This is for GAME routes
 
-app.get("/gameScreen", isLoggedIn, (req, res) => {
-  res.locals.gameApp = gameApp
-  res.locals.roomid = gameApp.roomLookup(req.user._id)
-
-  res.locals.currentUserId = req.user._id
-
-  console.log(gameApp.roomLookup(req.user._id))
-  res.render("gameScreen");
-});
-
 
 app.post('/guessLetter',(req,res) => {
   res.locals.guess = req.body.guess 
@@ -198,7 +194,7 @@ app.post('/guessLetter',(req,res) => {
   const gameRoomId = gameApp.guessLetter(req.user, req.body.targetGoogleId, req.body.guess);
   refreshPage(gameRoomId)
 
-  res.redirect('/gameScreen')
+  res.redirect('/waitingRoom')
 })
 
 
@@ -343,15 +339,6 @@ function refreshPage(room: number){
     }
   }
   
-}
-
-// this sends to evberyone lol
-function sendToGame(room: number){
-  for (let socketId in socketIdRoomMap){
-    if (socketIdRoomMap[socketId] == room){
-      io.to(socketId).emit("sendToGame");
-    }
-  }
 }
 
 server.listen(port);
