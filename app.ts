@@ -124,6 +124,7 @@ app.post("/selectRoom", isLoggedIn, (req, res) => {
 
   gameApp.joinWaitingRoom(req.body.roomnumber,req.user)
   refreshPage(req.body.roomnumber)
+  updateRoomList()
   res.redirect("/waitingRoom")
 });
 
@@ -174,6 +175,7 @@ app.post("/startRoom", isLoggedIn, (req, res) => {
   submittingRoom.isAvailable = false
   gameApp.createGameRoom(submittingRoom.roomID)
   refreshPage(submittingRoom.roomID)
+  updateRoomList()
   res.redirect('/waitingRoom')
 });
 
@@ -222,10 +224,14 @@ app.get("/createRoom", isLoggedIn, (req, res) => {
 
 // this is FROM the form
 app.post("/createRoom", isLoggedIn, (req, res) => {
-  console.log('post createroom')
+
   var roomNo = gameApp.createWaitingRoom(req.body.minPlayers,req.body.maxPlayers)
   gameApp.joinWaitingRoom(roomNo.toString(),req.user)
+
+  updateRoomList()
+
   res.redirect("/waitingRoom");
+
 });
 
 app.get("/joinGameMenuBar", isLoggedIn, (req, res) => {
@@ -255,7 +261,7 @@ app.get("/profile", isLoggedIn, (req, res) => {
   res.render("profile");
 });
 
-//
+
 app.post('/editProfile',
     isLoggedIn,
     async (req,res,next) => {
@@ -310,6 +316,13 @@ app.set("port", port);
 const http = require("http");
 const server = http.createServer(app);
 
+
+
+
+
+
+
+
 // socket io!! =====================================================================================================
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -318,13 +331,19 @@ const socketIdRoomMap: {[socketId: string]: number} = {}
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
+    delete socketIdRoomMap[socket.id];
   });
 
   socket.on('roomid', (arg) => {
     socketIdRoomMap[socket.id] = arg
-    console.log(socket.id, socketIdRoomMap[socket.id]);
+  });
+
+  socket.on('askForRoomList', () => {
+    socket.emit("roomList",gameApp)
+    socketIdRoomMap[socket.id] = null
   });
 
 });
@@ -338,7 +357,18 @@ function refreshPage(room: number){
       io.to(socketId).emit("refresh");
     }
   }
-  
+}
+
+function updateRoomList(){
+  for (let socketId in socketIdRoomMap){
+    if (socketIdRoomMap[socketId] == null){
+      io.to(socketId).emit("roomList",gameApp);
+      console.log("emitted room list")
+    }
+    else{
+      console.log("socket had a room")
+    }
+  }
 }
 
 server.listen(port);

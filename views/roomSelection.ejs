@@ -2,32 +2,20 @@
 
 <%- include('menubar') -%>
 
+<script src="/socket.io/socket.io.js"></script>
+
 <br>
 
-<table class="table table-bordered table-striped">
-  <% gameApp.waitingRooms.forEach(waitingRoom => {%>
-    <% if(waitingRoom.isAvailable) { %> 
-          <tr>
-            <td>Room <%= waitingRoom.roomID %></td>
-            <td>Players: <%= waitingRoom.playerIds.length %> / <%= waitingRoom.minPlayers%>-<%= waitingRoom.maxPlayers%></td>
-            <td>
-                <form method="post" action ="/selectRoom">
-                <input type="text" name="roomnumber" hidden='true' value='<%= waitingRoom.roomID%>' />
-                <input type="submit" value="Join"/>
-              </form>
-            </td>
-          </tr>
-    <% } %>
-  <% }) %>
-</table>
 
-<hr>
-Create a room:
-<form method="post" action ="/createRoom" autocomplete="off">
-  <input type="text" name="minPlayers" /> Minimum players (game can be started manually at this number) <br>
-  <input type="text" name="maxPlayers" /> Maximum players  <br>
-  <input type="submit" value="Submit"/>
-</form>
+<div id="reactRoomSelection"></div>
+
+<br>
 
 
-  <%- include('bootfooter') -%>
+<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>  
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="reactRoomSelection.jsx" type="text/babel"></script>
+
+<%- include('bootfooter') -%>
