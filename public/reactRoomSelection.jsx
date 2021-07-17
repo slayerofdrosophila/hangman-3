@@ -35,8 +35,7 @@ function RoomSelect() {
 	
     return (
       <div className="chart">
-        <p> ADKJAS </p>
-		<table>
+		<table className="table table-bordered table-striped">
 			<tbody>
 				{roomList}
 			</tbody>
