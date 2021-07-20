@@ -28,6 +28,17 @@
 </div>
 <br>
 
+<h4>This room's category is: <%= gameApp.waitingRooms[roomid].category %></h4>
+
+
+<% if (gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
+  <form method="post" action ="/setCategory" autocomplete="off">
+    <input type="text" name="category" /> choose room category <br>
+    <input type="submit" value="Submit"/>
+  </form> <hr>
+<% } %>
+
+
 
 <form method="post" action ="/submitWord" autocomplete="off">
   <input type="text" name="word" /> write your word <br>

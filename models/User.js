@@ -8,8 +8,6 @@ const Schema = mongoose.Schema;
 var userSchema = Schema( {
   googleid: String,
   googletoken: String,
-  googlename:String,
-  googleemail:String,
   
   username:String,
   age:Number,

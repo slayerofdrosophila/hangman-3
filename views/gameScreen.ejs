@@ -42,7 +42,7 @@
           <h6> <%= player.guessedLetters.join(' ') %> </h6>
           <h4> Health: <%= player.health %> </h4>
 
-          <% if(gameApp.gameRooms[roomid].winner == null && JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer]) == JSON.stringify(currentUserId)) { %> 
+          <% if(gameApp.gameRooms[roomid].winner == null && JSON.stringify(gameApp.gameRooms[roomid].playerIds[gameApp.gameRooms[roomid].turnPlayer]) == JSON.stringify(currentUserId) && JSON.stringify(currentUserId) != JSON.stringify(player.googleId)) { %> 
             <form method="post" action ="/guessLetter" autocomplete="off">
               <input type="text" name="guess" size="6"/> 
               <input type="submit" value="Submit"/>

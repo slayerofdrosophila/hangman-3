@@ -21,8 +21,10 @@ export class WordGameApp{
     const gameRoomId = this.roomLookup(user._id);
     var guessingPlayer = this.gameRooms[gameRoomId].players[user._id];
     var targetPlayer = this.gameRooms[gameRoomId].players[targetGoogleId];
-    
-    guessingPlayer.takeDamage(targetPlayer.guessLetter(guess));
+
+    var damage = targetPlayer.guessLetter(guess)
+
+    guessingPlayer.takeDamage(damage);
   
     this.gameRooms[gameRoomId].checkDeath(targetPlayer);
     if (this.gameRooms[gameRoomId].checkGameOver()) {
@@ -31,6 +33,10 @@ export class WordGameApp{
   
     this.gameRooms[gameRoomId].passTurn();
     return gameRoomId;
+  }
+
+  setRoomCategory(category: string, roomid: number){
+    this.waitingRooms[roomid].category = category
   }
 
   resetRoom(number){

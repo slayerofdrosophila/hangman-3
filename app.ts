@@ -164,7 +164,6 @@ app.post("/submitWord", isLoggedIn, (req, res) => {
 });
 
 
-
 app.post("/startRoom", isLoggedIn, (req, res) => {
 
   res.locals.gameApp = gameApp
@@ -179,6 +178,18 @@ app.post("/startRoom", isLoggedIn, (req, res) => {
   res.redirect('/waitingRoom')
 });
 
+app.post("/setCategory", isLoggedIn, (req, res) => {
+
+  const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
+
+  gameApp.setRoomCategory(req.body.category, submittingRoom.roomID)
+  
+  res.locals.gameApp = gameApp
+  res.locals.roomid = gameApp.roomLookup(req.user._id)
+  
+  refreshPage(submittingRoom.roomID)
+  res.redirect("/waitingRoom");
+});
 
 
 

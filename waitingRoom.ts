@@ -13,6 +13,8 @@ export class WaitingRoom{
 
   readyPlayerCount: number = 0
   readyPlayers: Player[] = []
+
+  category: string = ""
   
   // Time for the players to press the buttons?
   isReadyToStart: boolean = false

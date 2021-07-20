@@ -52,6 +52,11 @@ export class Player{
   guessLetter(input){
     input = input.toUpperCase()
     var result = this.word.guessLetter(input) // returns 0 if correct, 1 if incorrect
+
+    if (this.guessedLetters.indexOf(input) > -1){
+      return
+    }
+
     if (result == 1){
       this.guessedLetters.push(input)
     }

@@ -36,6 +36,10 @@ describe('Array', function() {
 
       assert.equal(gameApp.waitingRooms[0].playerIds.length, 1)
       console.log(testWR.playerCount)
+
+      gameApp.setRoomCategory("testcat", 0)
+
+      assert.equal(gameApp.waitingRooms[0].category, "testcat")
     });
 
     it('test 3 - duplic8 guess', function() {
@@ -49,7 +53,7 @@ describe('Array', function() {
       gameApp.createGameRoom(0)
 
       gameApp.guessLetter(user,"id2","a")
-      gameApp.guessLetter(user2,"id1","kjfdh")
+      gameApp.guessLetter(user2,"id","kjfdh")
       gameApp.guessLetter(user,"id2","a")
 
       assert.equal(gameApp.gameRooms[0].turnPlayer,0)
