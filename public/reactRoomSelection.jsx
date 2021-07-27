@@ -11,7 +11,6 @@ function RoomSelect() {
 			setGameApp(data);
 		});
 	  }, []);
-
 	
 	const roomList = gameApp.waitingRooms.map(waitingRoom => {
 		if(waitingRoom.isAvailable) {

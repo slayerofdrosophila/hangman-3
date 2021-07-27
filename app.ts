@@ -123,8 +123,9 @@ app.post("/selectRoom", isLoggedIn, (req, res) => {
   }
 
   gameApp.joinWaitingRoom(req.body.roomnumber,req.user)
-  refreshPage(req.body.roomnumber)
+  // refreshPage(req.body.roomnumber)
   updateRoomList()
+  updateRoomData(req.body.roomnumber)
   res.redirect("/waitingRoom")
 });
 
@@ -142,25 +143,27 @@ app.get("/waitingRoom", isLoggedIn, (req, res) => {
   }
 });
 
+
 // This is coming from the waiting room
 app.post("/submitWord", isLoggedIn, (req, res) => {
 
-  gameApp.submitWord(req.body.word,req.user._id)
-  res.locals.gameApp = gameApp
-  res.locals.roomid = gameApp.roomLookup(req.user._id)
-
-  const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
-  
-  // if this is the final word put in, start game
-  // isAvailable is turned to false when the room decides it's ready, through whatever means
-  if (!submittingRoom.isAvailable){
-    gameApp.createGameRoom(submittingRoom.roomID)
-    refreshPage(submittingRoom.roomID)
-    res.redirect('/waitingRoom')
-    return
-  }
-  refreshPage(submittingRoom.roomID)
-  res.redirect("/waitingRoom");
+  // gameApp.submitWord(req.body.word,req.user._id)
+  // res.locals.gameApp = gameApp
+  // res.locals.roomid = gameApp.roomLookup(req.user._id)
+  //
+  // const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
+  //
+  // // if this is the final word put in, start game
+  // // isAvailable is turned to false when the room decides it's ready, through whatever means
+  // if (!submittingRoom.isAvailable){
+  //   gameApp.createGameRoom(submittingRoom.roomID)
+  //   refreshPage(submittingRoom.roomID)
+  //   res.redirect('/waitingRoom')
+  //   return
+  // }
+  // console.log(submittingRoom.roomID)
+  // updateRoomData(submittingRoom.roomID)
+  // res.redirect("/waitingRoom");
 });
 
 
@@ -175,21 +178,10 @@ app.post("/startRoom", isLoggedIn, (req, res) => {
   gameApp.createGameRoom(submittingRoom.roomID)
   refreshPage(submittingRoom.roomID)
   updateRoomList()
+  updateRoomData(submittingRoom.roomID)
   res.redirect('/waitingRoom')
 });
 
-app.post("/setCategory", isLoggedIn, (req, res) => {
-
-  const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(req.user._id)];
-
-  gameApp.setRoomCategory(req.body.category, submittingRoom.roomID)
-  
-  res.locals.gameApp = gameApp
-  res.locals.roomid = gameApp.roomLookup(req.user._id)
-  
-  refreshPage(submittingRoom.roomID)
-  res.redirect("/waitingRoom");
-});
 
 
 
@@ -354,7 +346,57 @@ io.on('connection', (socket) => {
 
   socket.on('askForRoomList', () => {
     socket.emit("roomList",gameApp)
-    socketIdRoomMap[socket.id] = null
+    // socketIdRoomMap[socket.id] = null
+  });
+
+  socket.on('setCategory', (args) => {
+    console.log(args)
+    gameApp.setRoomCategory(args.category, parseInt(args.roomid))
+    updateRoomData(args.roomid)
+  });
+
+  socket.on('wordSubmit', (args) => {
+    gameApp.submitWord(args.word,args._id)
+
+    const submittingRoom = gameApp.waitingRooms[gameApp.roomLookup(args._id)];
+
+    // if this is the final word put in, start game
+    // isAvailable is turned to false when the room decides it's ready, through whatever means
+    if (!submittingRoom.isAvailable){
+      gameApp.createGameRoom(submittingRoom.roomID)
+      refreshPage(submittingRoom.roomID)
+      // res.redirect('/waitingRoom')
+      return
+    }
+    console.log(submittingRoom.roomID)
+    updateRoomData(submittingRoom.roomID)
+  });
+
+  socket.on('askForRoomData', (roomid) => {
+
+    let room = gameApp.waitingRooms[roomid]
+
+    // let renderingData = {
+    //   maxPlayers: room.maxPlayers,
+    //   minPlayers: room.minPlayers,
+    //   roomName: "4",
+    //   players: {"googleid1":{
+    //       word: "placeholder",
+    //       displayName: "player1",
+    //       isHost: true
+    //     },
+    //     "googleid2":{
+    //       word: "word2",
+    //       displayName: "player2",
+    //       isHost: false
+    //     }
+    //   },
+    //   firstPlayer: "googleid1",
+    //   readyPlayers: ["googleid2"]
+    // }
+
+    socket.emit("roomData",room)
+    // socketIdRoomMap[socket.id] = null
   });
 
 });
@@ -378,6 +420,24 @@ function updateRoomList(){
     }
     else{
       console.log("socket had a room")
+    }
+  }
+}
+
+function updateRoomData(roomNumber){
+  let room = gameApp.waitingRooms[roomNumber]
+
+  console.log("socketIdRoomMap", socketIdRoomMap)
+
+  for (let socketId in socketIdRoomMap){
+    if (socketIdRoomMap[socketId] == roomNumber){
+
+      io.to(socketId).emit("roomData",room);
+
+      console.log("emitted room data")
+    }
+    else{
+      console.log("socket was not in a room (how)")
     }
   }
 }

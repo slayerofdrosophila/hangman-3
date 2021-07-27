@@ -36,6 +36,7 @@ export class WordGameApp{
   }
 
   setRoomCategory(category: string, roomid: number){
+    console.log(roomid)
     this.waitingRooms[roomid].category = category
   }
 

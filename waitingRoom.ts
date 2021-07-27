@@ -9,10 +9,10 @@ export class WaitingRoom{
   playerCount: number = 0
   players: {[googleid:string]: Player} = {}
   playerIds: string[] = []
-  firstPlayer: Player = null
+  firstPlayer: string = null
 
   readyPlayerCount: number = 0
-  readyPlayers: Player[] = []
+  readyPlayerIds: string[] = []
 
   category: string = ""
   
@@ -41,7 +41,7 @@ export class WaitingRoom{
     }
 
     if (this.firstPlayer == null){
-      this.firstPlayer = this.players[user._id]
+      this.firstPlayer = user._id
     }
   }
 
@@ -49,12 +49,12 @@ export class WaitingRoom{
     this.players[id].makeWord(word)
 
     // only puts them in if theyre not in there
-    if (this.readyPlayers.indexOf(this.players[id]) == -1){
-      this.readyPlayers.push(this.players[id])
+    if (this.readyPlayerIds.indexOf(id) == -1){
+      this.readyPlayerIds.push(id)
     }
 
     // max capacity
-    if (this.readyPlayers.length == this.maxPlayers){
+    if (this.readyPlayerIds.length == this.maxPlayers){
       console.log("waitingRoom",this.roomID,"is ready to start")
       this.isAvailable = false
       this.isReadyToStart = true
@@ -67,7 +67,7 @@ export class WaitingRoom{
     this.playerCount = 0
     this.players = {}
     this.isAvailable = true
-    this.readyPlayers = []
+    this.readyPlayerIds = []
     this.isReadyToStart = false
     this.firstPlayer = null
     

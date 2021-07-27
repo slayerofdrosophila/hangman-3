@@ -2,82 +2,21 @@
 <%- include('menubar') -%>
 
 <script src="/socket.io/socket.io.js"></script>
+
+
+
+<div id="reactWaitingRoom"></div>
+
+
+<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="reactWaitingRoom.jsx" type="text/babel"></script>
 <script>
-
-  var socket = io();
-  socket.emit("roomid",<%- roomid %>)
-
-  socket.on('refresh', function(msg) {
-    console.log("reloadign")
-    location.reload()
-  });
-
-  socket.on('sendToGame', function(msg) {
-    console.log("reloadsendtogameign")
-    window.location.href = "/gameScreen"
-  });
+    window.googleid = "<%= googleid %>"
+    window.roomid = "<%= roomid %>"
 </script>
-
-
-<h4>Room <%= roomid %> </h4>
-
-<div>
-  There are <%= gameApp.waitingRooms[roomid].readyPlayers.length %> / 
-  <%= gameApp.waitingRooms[roomid].minPlayers %> - <%= gameApp.waitingRooms[roomid].maxPlayers%> players ready. <br>
-  There are <%= Object.keys(gameApp.waitingRooms[roomid].players).length %> players in this room. <br>
-</div>
-<br>
-
-<h4>This room's category is: <%= gameApp.waitingRooms[roomid].category %></h4>
-
-
-<% if (gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
-  <form method="post" action ="/setCategory" autocomplete="off">
-    <input type="text" name="category" /> choose room category <br>
-    <input type="submit" value="Submit"/>
-  </form> <hr>
-<% } %>
-
-
-
-<form method="post" action ="/submitWord" autocomplete="off">
-  <input type="text" name="word" /> write your word <br>
-  <input type="submit" value="Submit"/>
-</form>
-
-<br>
-
-<% if ( gameApp.waitingRooms[roomid].readyPlayers.length >= gameApp.waitingRooms[roomid].minPlayers && gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
-  <form method="post" action ="/startRoom" autocomplete="off">
-    <input type="submit" value="Start Game Early"/>
-  </form> <hr>
-<% } %>
-
-<br>
-
-<table class="table table-bordered table-striped">
-    <thead>
-      <tr>
-        <td>Connected players:</td>
-        <td>Status</td>
-      </tr>
-    </thead>
-  <% Object.keys(gameApp.waitingRooms[roomid].players).forEach(googleid => {%>
-    <tr>
-      <td>
-        <% if (gameApp.waitingRooms[roomid].firstPlayer == gameApp.waitingRooms[roomid].players[googleid]){ %>
-          [Host]
-        <% } %>
-        <%= gameApp.waitingRooms[roomid].players[googleid].displayName %></td>
-      <td>
-        <% if (gameApp.waitingRooms[roomid].readyPlayers.indexOf(gameApp.waitingRooms[roomid].players[googleid]) != -1){ %>
-          [Ready]
-        <% } %>
-      </td>
-    </tr>
-  <% }) %>
-</table>
-
 
 
 <%- include('bootfooter') -%>
